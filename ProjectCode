@@ -1,0 +1,39 @@
+// Define the pin connections
+int soilMoisturePin = A2;
+int relayControlPin = D2;
+
+// Define the dryness threshold for the soil. 
+int dryThreshold = 700;
+
+// Define the time to start watering
+int wateringHour = 14; // 24 hour format (14 means 2 PM)
+
+void setup() {
+  // Set up the control pin as output
+  pinMode(relayControlPin, OUTPUT);
+  // Start with the pump off
+  digitalWrite(relayControlPin, HIGH); // for active low relay, pump off means HIGH state
+}
+
+void loop() {
+  // Fetch current hour
+  int currentHour = Time.hour();
+
+  // If it's the watering hour
+  if (currentHour == wateringHour) {
+    // Read the soil moisture level
+    int soilMoisture = analogRead(soilMoisturePin);
+
+    // If the soil is too dry
+    if (soilMoisture > dryThreshold) {
+      // Turn on the pump
+      digitalWrite(relayControlPin, LOW); // for active low relay, pump on means LOW state
+      delay(1000 * 10); // keep the pump on for 10 seconds
+      digitalWrite(relayControlPin, HIGH); // turn off the pump
+    }
+  }
+
+  // Delay for a bit before checking again (This is to stop the loop from continuosly running)
+  delay(1000);
+}
+
